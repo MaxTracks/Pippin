@@ -16,7 +16,7 @@ public class Machine extends Observable {
 		return cpu.getAccumulator();
 	}
 	public void setAccumulator(int accumulator) {
-		setAccumulator(accumulator);
+		cpu.setAccumulator(accumulator);
 	}
 	public int getProgramCounter() {
 		return cpu.getProgramCounter();
