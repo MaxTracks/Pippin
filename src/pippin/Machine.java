@@ -62,46 +62,49 @@ public class Machine extends Observable {
     	 * @author Tim
     	 */
     	INSTRUCTION_MAP.put("SUB",(int arg, boolean immediate, boolean indirect) -> {
-//            if (immediate) {
-//                cpu.setAccumulator(cpu.getAccumulator() + arg);
-//            } else if (indirect) {
-//                int arg1 = memory.getData(arg);
-//                cpu.setAccumulator(cpu.getAccumulator() + memory.getData(arg1));                    
-//            } else {
-//                cpu.setAccumulator(cpu.getAccumulator() + memory.getData(arg));         
-//            }
-//            cpu.incrementCounter();
-        });
-        
+    	    if (immediate) {
+    	        cpu.setAccumulator(cpu.getAccumulator() - arg);
+    	    } else if (indirect) {
+    	        int arg1 = memory.getData(arg);
+    	        cpu.setAccumulator(cpu.getAccumulator() - memory.getData(arg1));                    
+    	    } else {
+    	        cpu.setAccumulator(cpu.getAccumulator() - memory.getData(arg));         
+    	    }
+    	    cpu.incrementCounter();
+    	});
+
     	/**
     	 * @author Tim
     	 */
     	INSTRUCTION_MAP.put("MUL",(int arg, boolean immediate, boolean indirect) -> {
-//            if (immediate) {
-//                cpu.setAccumulator(cpu.getAccumulator() + arg);
-//            } else if (indirect) {
-//                int arg1 = memory.getData(arg);
-//                cpu.setAccumulator(cpu.getAccumulator() + memory.getData(arg1));                    
-//            } else {
-//                cpu.setAccumulator(cpu.getAccumulator() + memory.getData(arg));         
-//            }
-//            cpu.incrementCounter();
-        });
-    	
+    	    if (immediate) {
+    	        cpu.setAccumulator(cpu.getAccumulator() * arg);
+    	    } else if (indirect) {
+    	        int arg1 = memory.getData(arg);
+    	        cpu.setAccumulator(cpu.getAccumulator() * memory.getData(arg1));                    
+    	    } else {
+    	        cpu.setAccumulator(cpu.getAccumulator() * memory.getData(arg));         
+    	    }
+    	    cpu.incrementCounter();
+    	});
+
     	/**
     	 * @author Tim
     	 */
     	INSTRUCTION_MAP.put("DIV",(int arg, boolean immediate, boolean indirect) -> {
-//            if (immediate) {
-//                cpu.setAccumulator(cpu.getAccumulator() + arg);
-//            } else if (indirect) {
-//                int arg1 = memory.getData(arg);
-//                cpu.setAccumulator(cpu.getAccumulator() + memory.getData(arg1));                    
-//            } else {
-//                cpu.setAccumulator(cpu.getAccumulator() + memory.getData(arg));         
-//            }
-//            cpu.incrementCounter();
-        });
+    	    if (immediate) {
+    	        if(arg == 0){throw new DivideByZeroException("attempt to divide by zero";)}
+    	        else{cpu.setAccumulator(cpu.getAccumulator() / arg);}
+    	    } else if (indirect) {
+    	        int arg1 = memory.getData(arg);
+    	        if(arg1 == 0){throw new DivideByZeroException("attempt to divide by zero";)}
+    	        else{cpu.setAccumulator(cpu.getAccumulator() / memory.getData(arg1));}                  
+    	    } else {
+    	    	if(memory.getData(arg) == 0){throw new DivideByZeroException("attempt to divide by zero";)}
+    	        else{cpu.setAccumulator(cpu.getAccumulator() / memory.getData(arg));}        
+    	    }
+    	    cpu.incrementCounter();
+    	});
         
         
         INSTRUCTION_MAP.put("CMPZ",(int arg, boolean immediate, boolean indirect) -> {
