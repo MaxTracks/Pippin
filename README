@@ -1,12 +1,21 @@
 amarcus4
-mslocum1
 dkrein1
 thung1
 
+done:
+ - ADD
+ - CMPZ
+ - STO
+ - NOP
+ - HALT
+
 todo:
- - CMPL
+ - LOD (David)
+ - JUMP
+ - JMPZ (Alex)
+ - SUB (Tim)
+ - MUL (Tim)
+ - DIV (Tim)
  - AND
- - DIV
- - MUL (Max)
- - SUB (Max)
- - JMPZ
+ - NOT (Alex)
+ - CMPL
