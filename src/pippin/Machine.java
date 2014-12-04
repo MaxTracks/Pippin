@@ -46,7 +46,7 @@ public class Machine extends Observable {
     
 // Here are two lambda expressions for instructions
     public Machine() {
-        INSTRUCTION_MAP.put("ADD",(int arg, boolean immediate, boolean indirect) -> {
+    	INSTRUCTION_MAP.put("ADD",(int arg, boolean immediate, boolean indirect) -> {
             if (immediate) {
                 cpu.setAccumulator(cpu.getAccumulator() + arg);
             } else if (indirect) {
@@ -57,6 +57,53 @@ public class Machine extends Observable {
             }
             cpu.incrementCounter();
         });
+    	
+    	/**
+    	 * @author Tim
+    	 */
+    	INSTRUCTION_MAP.put("SUB",(int arg, boolean immediate, boolean indirect) -> {
+//            if (immediate) {
+//                cpu.setAccumulator(cpu.getAccumulator() + arg);
+//            } else if (indirect) {
+//                int arg1 = memory.getData(arg);
+//                cpu.setAccumulator(cpu.getAccumulator() + memory.getData(arg1));                    
+//            } else {
+//                cpu.setAccumulator(cpu.getAccumulator() + memory.getData(arg));         
+//            }
+//            cpu.incrementCounter();
+        });
+        
+    	/**
+    	 * @author Tim
+    	 */
+    	INSTRUCTION_MAP.put("MUL",(int arg, boolean immediate, boolean indirect) -> {
+//            if (immediate) {
+//                cpu.setAccumulator(cpu.getAccumulator() + arg);
+//            } else if (indirect) {
+//                int arg1 = memory.getData(arg);
+//                cpu.setAccumulator(cpu.getAccumulator() + memory.getData(arg1));                    
+//            } else {
+//                cpu.setAccumulator(cpu.getAccumulator() + memory.getData(arg));         
+//            }
+//            cpu.incrementCounter();
+        });
+    	
+    	/**
+    	 * @author Tim
+    	 */
+    	INSTRUCTION_MAP.put("DIV",(int arg, boolean immediate, boolean indirect) -> {
+//            if (immediate) {
+//                cpu.setAccumulator(cpu.getAccumulator() + arg);
+//            } else if (indirect) {
+//                int arg1 = memory.getData(arg);
+//                cpu.setAccumulator(cpu.getAccumulator() + memory.getData(arg1));                    
+//            } else {
+//                cpu.setAccumulator(cpu.getAccumulator() + memory.getData(arg));         
+//            }
+//            cpu.incrementCounter();
+        });
+        
+        
         INSTRUCTION_MAP.put("CMPZ",(int arg, boolean immediate, boolean indirect) -> {
             int operand = memory.getData(arg);
             if (immediate) {
