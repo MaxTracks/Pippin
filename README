@@ -4,6 +4,9 @@ thung1
 
 done:
  - ADD
+ - SUB (Tim)
+ - MUL (Tim)
+ - DIV (Tim)
  - CMPZ
  - STO
  - NOP
@@ -14,8 +17,5 @@ done:
 todo:
  - LOD (David)
  - JUMP (Alex)
- - SUB (Tim)
- - MUL (Tim)
- - DIV (Tim)
  - AND
  - CMPL
