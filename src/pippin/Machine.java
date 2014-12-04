@@ -149,5 +149,42 @@ public class Machine extends Observable {
             Runtime.getRuntime().halt(0);
             cpu.incrementCounter();
         });
+        /**
+         * @author Alex
+         **/
+        INSTRUCTION_MAP.put("NOT",(int arg, boolean immediate, boolean indirect) -> {
+            if (immediate) {
+                throw new IllegalInstructionModeException("attempt to execute indirect AND");
+            } else if (indirect) {
+                throw new IllegalInstructionModeException("attempt to execute indirect AND");
+            } 
+            if(cpu.getAccumulator() == 0) {
+                cpu.setAccumulator(1);          
+            } else {
+                cpu.setAccumulator(0);          
+            }
+            cpu.incrementCounter();
+        });
+        
+        /**
+         * @author Alex
+         **/
+        INSTRUCTION_MAP.put("JMPZ",(int arg, boolean immediate, boolean indirect) -> {
+            if (immediate) {
+            	throw new IllegalInstructionModeException("attempt to execute immediate AND");
+            } else if (indirect) {
+            	if(cpu.getAccumulator() == 0){
+            		int arg1 = memory.getData(arg);
+            		cpu.setProgramCounter(arg1);
+            	}
+            	else cpu.incrementCounter();
+            } else {
+                if(cpu.getAccumulator() == 0){
+                	cpu.setProgramCounter(arg);
+                }
+                else cpu.incrementCounter();
+            }
+            
+        });
     }
  }
