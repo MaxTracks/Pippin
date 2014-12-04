@@ -8,14 +8,14 @@ done:
  - STO
  - NOP
  - HALT
+ - JMPZ (Alex)
+ - NOT (Alex)
 
 todo:
  - LOD (David)
- - JUMP
- - JMPZ (Alex)
+ - JUMP (Alex)
  - SUB (Tim)
  - MUL (Tim)
  - DIV (Tim)
  - AND
- - NOT (Alex)
  - CMPL
