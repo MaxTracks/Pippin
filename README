@@ -14,9 +14,11 @@ done:
  - JMPZ (Alex)
  - NOT (Alex)
  - JUMP (Alex)
-
-todo:
  - LOD (David)
- 
  - AND
  - CMPL
+
+todo:
+
+Parts 1-4 (Alex)
+Parts 5-14 (Tim + David)

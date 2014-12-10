@@ -87,7 +87,6 @@ public class Machine extends Observable {
     	    }
     	    cpu.incrementCounter();
     	});
-
     	/**
     	 * @author Tim
     	 **/
@@ -97,7 +96,7 @@ public class Machine extends Observable {
     	        else{cpu.setAccumulator(cpu.getAccumulator() / arg);}
     	    } else if (indirect) {
     	        int arg1 = memory.getData(arg);
-    	        if(arg1 == 0){throw new DivideByZeroException("attempt to divide by zero");}
+    	        if(memory.getData(arg1) == 0){throw new DivideByZeroException("attempt to divide by zero");}
     	        else{cpu.setAccumulator(cpu.getAccumulator() / memory.getData(arg1));}                  
     	    } else {
     	    	if(memory.getData(arg) == 0){throw new DivideByZeroException("attempt to divide by zero");}
@@ -105,8 +104,7 @@ public class Machine extends Observable {
     	    }
     	    cpu.incrementCounter();
     	});
-        
-        
+       
         INSTRUCTION_MAP.put("CMPZ",(int arg, boolean immediate, boolean indirect) -> {
             int operand = memory.getData(arg);
             if (immediate) {
@@ -157,9 +155,9 @@ public class Machine extends Observable {
          **/
         INSTRUCTION_MAP.put("NOT",(int arg, boolean immediate, boolean indirect) -> {
             if (immediate) {
-                throw new IllegalInstructionModeException("attempt to execute indirect AND");
+                throw new IllegalInstructionModeException("attempt to execute indirect NOT");
             } else if (indirect) {
-                throw new IllegalInstructionModeException("attempt to execute indirect AND");
+                throw new IllegalInstructionModeException("attempt to execute indirect NOT");
             } 
             if(cpu.getAccumulator() == 0) {
                 cpu.setAccumulator(1);          
@@ -200,6 +198,57 @@ public class Machine extends Observable {
             } else {
                 cpu.setProgramCounter(arg);
             }
+        });
+        /**
+         * @author Alex
+         **/
+        INSTRUCTION_MAP.put("LOD",(int arg, boolean immediate, boolean indirect) -> {
+            if (immediate) {
+            	cpu.setAccumulator(arg);
+            } else if (indirect) {
+            	int arg1 = memory.getData(arg);
+            	int arg2 = memory.getData(arg1);
+        		cpu.setAccumulator(arg2);
+            } else {
+            	int arg1 = memory.getData(arg);
+        		cpu.setAccumulator(arg1);
+            }
+            cpu.incrementCounter();
+        });
+        /**
+         * @author Alex
+         **/
+        INSTRUCTION_MAP.put("AND",(int arg, boolean immediate, boolean indirect) -> {
+            if (immediate) {
+            	if(arg != 0 && cpu.getAccumulator()!=0){
+            		cpu.setAccumulator(1);
+            	} else cpu.setAccumulator(0);
+            } else if (indirect) {
+            	throw new IllegalInstructionModeException("attempt to execute indirect JUMP");
+            } else {
+            	int arg1 = memory.getData(arg);
+            	if(arg1 != 0 && cpu.getAccumulator()!=0){
+            		cpu.setAccumulator(1);
+            	} else cpu.setAccumulator(0);
+            }
+            cpu.incrementCounter();
+        });
+        /**
+         * @author Alex
+         **/
+        INSTRUCTION_MAP.put("CMPL",(int arg, boolean immediate, boolean indirect) -> {
+            int operand = memory.getData(arg);
+            if (immediate) {
+                throw new IllegalInstructionModeException("attempt to execute indirect CMPZ");
+            } else if (indirect) {
+                throw new IllegalInstructionModeException("attempt to execute indirect CMPZ");
+            } 
+            if(operand < 0) {
+                cpu.setAccumulator(1);          
+            } else {
+                cpu.setAccumulator(0);          
+            }
+            cpu.incrementCounter();
         });
     }
  }
