@@ -9,6 +9,7 @@ public class Machine extends Observable {
     public final Map<String, Instruction> INSTRUCTION_MAP = new TreeMap<>();
     private Memory memory = new Memory();
     private Processor cpu = new Processor();
+    private Code code = new Code();
 
 // ADD DELEGATE METHODS FOR int setData, int getData, and int[] getData from memory
 // all the setters and getters of cpu, and the incrementCounter
@@ -21,6 +22,11 @@ public class Machine extends Observable {
 	public int getProgramCounter() {
 		return cpu.getProgramCounter();
 	}
+	
+	public Code getCode(){
+		return code;
+	}
+	
 	public void setProgramCounter(int programCounter) {
 		cpu.setProgramCounter(programCounter);
 	}
@@ -36,9 +42,14 @@ public class Machine extends Observable {
     	return memory.getData(index);
     }
     
+    public Processor getCpu(){
+    	return cpu;
+    }
+    
     public int[] getData() {
     	return memory.getData();
     }
+    
     
     public Instruction get(String code) {
     	return INSTRUCTION_MAP.get(code);
@@ -46,7 +57,7 @@ public class Machine extends Observable {
     
 // Here are two lambda expressions for instructions
     public Machine(){
-    	INSTRUCTION_MAP.put("ADD",(int arg, boolean immediate, boolean indirect) -> {
+    	INSTRUCTION_MAP.put("0x3",(int arg, boolean immediate, boolean indirect) -> {
             if (immediate) {
                 cpu.setAccumulator(cpu.getAccumulator() + arg);
             } else if (indirect) {
@@ -61,7 +72,7 @@ public class Machine extends Observable {
     	/**
     	 * @author Tim
     	 **/
-    	INSTRUCTION_MAP.put("SUB",(int arg, boolean immediate, boolean indirect) -> {
+    	INSTRUCTION_MAP.put("0x4",(int arg, boolean immediate, boolean indirect) -> {
     	    if (immediate) {
     	        cpu.setAccumulator(cpu.getAccumulator() - arg);
     	    } else if (indirect) {
@@ -76,7 +87,7 @@ public class Machine extends Observable {
     	/**
     	 * @author Tim
     	 **/
-    	INSTRUCTION_MAP.put("MUL",(int arg, boolean immediate, boolean indirect) -> {
+    	INSTRUCTION_MAP.put("0x5",(int arg, boolean immediate, boolean indirect) -> {
     	    if (immediate) {
     	        cpu.setAccumulator(cpu.getAccumulator() * arg);
     	    } else if (indirect) {
@@ -90,7 +101,7 @@ public class Machine extends Observable {
     	/**
     	 * @author Tim
     	 **/
-    	INSTRUCTION_MAP.put("DIV",(int arg, boolean immediate, boolean indirect) -> {
+    	INSTRUCTION_MAP.put("0x6",(int arg, boolean immediate, boolean indirect) -> {
     	    if (immediate) {
     	        if(arg == 0){throw new DivideByZeroException("attempt to divide by zero");}
     	        else{cpu.setAccumulator(cpu.getAccumulator() / arg);}
@@ -105,7 +116,7 @@ public class Machine extends Observable {
     	    cpu.incrementCounter();
     	});
        
-        INSTRUCTION_MAP.put("CMPZ",(int arg, boolean immediate, boolean indirect) -> {
+        INSTRUCTION_MAP.put("0x9",(int arg, boolean immediate, boolean indirect) -> {
             int operand = memory.getData(arg);
             if (immediate) {
                 throw new IllegalInstructionModeException("attempt to execute indirect CMPZ");
@@ -120,7 +131,7 @@ public class Machine extends Observable {
             cpu.incrementCounter();
         });
         
-        INSTRUCTION_MAP.put("STO",(int arg, boolean immediate, boolean indirect) -> {
+        INSTRUCTION_MAP.put("0x2",(int arg, boolean immediate, boolean indirect) -> {
             int operand = memory.getData(arg);
             if (immediate) {
                 throw new IllegalInstructionModeException("attempt to execute indirect STO");
@@ -131,8 +142,8 @@ public class Machine extends Observable {
             }
             cpu.incrementCounter();
         });
-        
-        INSTRUCTION_MAP.put("NOP",(int arg, boolean immediate, boolean indirect) -> {
+       
+        INSTRUCTION_MAP.put("0x0",(int arg, boolean immediate, boolean indirect) -> {
             if (immediate) {
                 throw new IllegalInstructionModeException("attempt to execute immediate NOP");
             } else if (indirect) {
@@ -141,7 +152,7 @@ public class Machine extends Observable {
             cpu.incrementCounter();
         });
 
-        INSTRUCTION_MAP.put("HALT",(int arg, boolean immediate, boolean indirect) -> {
+        INSTRUCTION_MAP.put("0xF",(int arg, boolean immediate, boolean indirect) -> {
             if (immediate) {
                 throw new IllegalInstructionModeException("attempt to execute immediate HALT");
             } else if (indirect) {
@@ -153,7 +164,7 @@ public class Machine extends Observable {
         /**
          * @author Alex
          **/
-        INSTRUCTION_MAP.put("NOT",(int arg, boolean immediate, boolean indirect) -> {
+        INSTRUCTION_MAP.put("0x8",(int arg, boolean immediate, boolean indirect) -> {
             if (immediate) {
                 throw new IllegalInstructionModeException("attempt to execute indirect NOT");
             } else if (indirect) {
@@ -170,7 +181,7 @@ public class Machine extends Observable {
         /**
          * @author Alex
          **/
-        INSTRUCTION_MAP.put("JMPZ",(int arg, boolean immediate, boolean indirect) -> {
+        INSTRUCTION_MAP.put("0xC",(int arg, boolean immediate, boolean indirect) -> {
             if (immediate) {
             	throw new IllegalInstructionModeException("attempt to execute immediate JMPZ");
             } else if (indirect) {
@@ -189,7 +200,7 @@ public class Machine extends Observable {
         /**
          * @author Alex
          **/
-        INSTRUCTION_MAP.put("JUMP",(int arg, boolean immediate, boolean indirect) -> {
+        INSTRUCTION_MAP.put("0xB",(int arg, boolean immediate, boolean indirect) -> {
             if (immediate) {
             	throw new IllegalInstructionModeException("attempt to execute immediate JUMP");
             } else if (indirect) {
@@ -202,7 +213,7 @@ public class Machine extends Observable {
         /**
          * @author Alex
          **/
-        INSTRUCTION_MAP.put("LOD",(int arg, boolean immediate, boolean indirect) -> {
+        INSTRUCTION_MAP.put("0x1",(int arg, boolean immediate, boolean indirect) -> {
             if (immediate) {
             	cpu.setAccumulator(arg);
             } else if (indirect) {
@@ -218,7 +229,7 @@ public class Machine extends Observable {
         /**
          * @author Alex
          **/
-        INSTRUCTION_MAP.put("AND",(int arg, boolean immediate, boolean indirect) -> {
+        INSTRUCTION_MAP.put("0x7",(int arg, boolean immediate, boolean indirect) -> {
             if (immediate) {
             	if(arg != 0 && cpu.getAccumulator()!=0){
             		cpu.setAccumulator(1);
@@ -236,7 +247,7 @@ public class Machine extends Observable {
         /**
          * @author Alex
          **/
-        INSTRUCTION_MAP.put("CMPL",(int arg, boolean immediate, boolean indirect) -> {
+        INSTRUCTION_MAP.put("0xA",(int arg, boolean immediate, boolean indirect) -> {
             int operand = memory.getData(arg);
             if (immediate) {
                 throw new IllegalInstructionModeException("attempt to execute indirect CMPZ");
