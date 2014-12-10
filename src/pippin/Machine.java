@@ -23,6 +23,10 @@ public class Machine extends Observable {
 		return cpu.getProgramCounter();
 	}
 	
+	public Memory getMemory(){
+		return memory;
+	}
+	
 	public Code getCode(){
 		return code;
 	}
