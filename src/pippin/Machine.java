@@ -10,6 +10,7 @@ public class Machine extends Observable {
     private Memory memory = new Memory();
     private Processor cpu = new Processor();
     private Code code = new Code();
+    private States state;
 
 // ADD DELEGATE METHODS FOR int setData, int getData, and int[] getData from memory
 // all the setters and getters of cpu, and the incrementCounter
@@ -21,6 +22,10 @@ public class Machine extends Observable {
 	}
 	public int getProgramCounter() {
 		return cpu.getProgramCounter();
+	}
+	
+	public States getState(){
+		return state;
 	}
 	
 	public Memory getMemory(){
@@ -58,6 +63,11 @@ public class Machine extends Observable {
     public Instruction get(String code) {
     	return INSTRUCTION_MAP.get(code);
     }
+    
+    public void step(){ }
+    public void clearAll(){ }
+    public void reload(){ }
+    public void toggleAutoStep(){ }
     
 // Here are two lambda expressions for instructions
     public Machine(){
