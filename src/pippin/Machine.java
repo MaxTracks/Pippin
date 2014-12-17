@@ -3,9 +3,13 @@ package pippin;
 import java.util.Map;
 import java.util.Observable;
 import java.util.TreeMap;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.GridLayout;
 import java.lang.Runtime;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 public class Machine extends Observable {
     public final Map<String, Instruction> INSTRUCTION_MAP = new TreeMap<>();
@@ -56,7 +60,7 @@ public class Machine extends Observable {
         controlPanel = new ControlPanel(this);
         processorPanel = new ProcessorViewPanel(this);
         frame = new JFrame("Pippin Simulator");
-        JPanel center = new JPanel;
+        JPanel center = new JPanel();
         frame.add(center);
         Container content = frame.getContentPane();
         content.setLayout(new BorderLayout(1,1));
