@@ -60,8 +60,8 @@ public class Machine extends Observable {
     }
     
     
-    public Instruction get(String code) {
-    	return INSTRUCTION_MAP.get(code);
+    public Instruction get(int key) {
+    	return INSTRUCTION_MAP.get(key);
     }
     
     public void step(){ }
