@@ -5,13 +5,85 @@ import java.util.Observable;
 import java.util.TreeMap;
 import java.lang.Runtime;
 
+import javax.swing.JFrame;
+
 public class Machine extends Observable {
     public final Map<String, Instruction> INSTRUCTION_MAP = new TreeMap<>();
     private Memory memory = new Memory();
     private Processor cpu = new Processor();
     private Code code = new Code();
     private States state;
+    
+    //Part VI private fields
+    private CodeViewPanel codeViewPanel;
+    private MemoryViewPanel memoryViewPanel1;
+    private MemoryViewPanel memoryViewPanel2;
+    private MemoryViewPanel memoryViewPanel3;
+    private ControlPanel controlPanel;
+    private ProcessorViewPanel processorPanel;
+    private JFrame frame;
 
+    /**
+     * Part VI
+     * Main method that drives the whole simulator
+     * @param args command line arguments are not used
+     */
+    public static void main(String[] args) {
+    	javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new Machine(); 
+            }
+        });
+    }
+    
+    /**
+     * Part VI
+     * @author Tim
+     */
+    public void halt(){
+    	
+    }
+    
+    /**
+     * Part VI
+     * @author Tim
+     */
+    private void createAndShowGUI(){
+    	codeViewPanel = new CodeViewPanel(this);
+        memoryViewPanel1 = new MemoryViewPanel(this, 0, 160);
+        memoryViewPanel2 = new MemoryViewPanel(this, 160, 240);
+        memoryViewPanel3 = new MemoryViewPanel(this, 240, Memory.DATA_SIZE);
+        controlPanel = new ControlPanel(this);
+        processorPanel = new ProcessorViewPanel(this);
+        frame = new JFrame("Pippin Simulator");
+        JPanel center = new JPanel;
+        frame.add(center);
+        Container content = frame.getContentPane();
+        content.setLayout(new BorderLayout(1,1));
+        content.setBackground(Color.BLACK);
+        frame.setSize(1200,600);
+        center.setLayout(new GridLayout(1,3));
+        frame.add(codeViewPanel.createCodeDisplay(),BorderLayout.LINE_START);
+        frame.add(center,BorderLayout.CENTER);
+        center.add(memoryViewPanel1.createMemoryDisplay());
+        center.add(memoryViewPanel2.createMemoryDisplay());
+        center.add(memoryViewPanel3.createMemoryDisplay());
+        frame.add(controlPanel.createControlDisplay(),BorderLayout.PAGE_END);
+        frame.add(processorPanel.createProcessorDisplay(),BorderLayout.PAGE_START);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        
+        //TODO un-comment when ExitAdapter is added.
+        //      frame.addWindowListener(new ExitAdapter());
+        
+        state = States.NOTHING_LOADED;
+        state.enter();
+        setChanged();
+        notifyObservers();
+        //TODO start a timer here in a future step
+        frame.setVisible(true);
+    }
+    
+    
 // ADD DELEGATE METHODS FOR int setData, int getData, and int[] getData from memory
 // all the setters and getters of cpu, and the incrementCounter
     public int getAccumulator() {
@@ -172,6 +244,8 @@ public class Machine extends Observable {
             } else if (indirect) {
                 throw new IllegalInstructionModeException("attempt to execute indirect HALT");
             } 
+            //Part VI calling halt()
+            halt();
             Runtime.getRuntime().halt(0);
             cpu.incrementCounter();
         });
@@ -275,5 +349,8 @@ public class Machine extends Observable {
             }
             cpu.incrementCounter();
         });
+        
+        //Part VI: very last step
+        createAndShowGUI();
     }
  }
