@@ -18,7 +18,7 @@ public class Machine extends Observable {
     private Code code = new Code();
     private States state;
     
-    //Part VI private fields
+    //Part VI fields
     private CodeViewPanel codeViewPanel;
     private MemoryViewPanel memoryViewPanel1;
     private MemoryViewPanel memoryViewPanel2;
@@ -27,6 +27,10 @@ public class Machine extends Observable {
     private ProcessorViewPanel processorPanel;
     private JFrame frame;
 
+    //Part VII fields
+    private MenuBarBuilder menuBuilder;
+    
+    
     /**
      * Part VI
      * Main method that drives the whole simulator
@@ -53,6 +57,7 @@ public class Machine extends Observable {
      * @author Tim
      */
     private void createAndShowGUI(){
+    	menuBuilder = new MenuBarBuilder(this);
     	codeViewPanel = new CodeViewPanel(this);
         memoryViewPanel1 = new MemoryViewPanel(this, 0, 160);
         memoryViewPanel2 = new MemoryViewPanel(this, 160, 240);
@@ -76,6 +81,12 @@ public class Machine extends Observable {
         frame.add(processorPanel.createProcessorDisplay(),BorderLayout.PAGE_START);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
+        //Part VIII
+        JMenuBar bar = new JMenuBar();
+        frame.setJMenuBar(bar);
+        bar.add(menuBuilder.createFileMenu());
+        bar.add(menuBuilder.createExecuteMenu());
+        
         //TODO un-comment when ExitAdapter is added.
         //      frame.addWindowListener(new ExitAdapter());
         
@@ -87,6 +98,11 @@ public class Machine extends Observable {
         frame.setVisible(true);
     }
     
+    //Part VIII methods
+    public void exit() { }
+    public void assembleFile() { }
+    public void loadFile() { }
+    public void execute() { }
     
 // ADD DELEGATE METHODS FOR int setData, int getData, and int[] getData from memory
 // all the setters and getters of cpu, and the incrementCounter
