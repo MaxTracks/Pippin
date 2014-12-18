@@ -1,21 +1,35 @@
 package pippin;
 
-import java.util.Map;
-import java.util.Observable;
-import java.util.TreeMap;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
-import java.lang.Runtime;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Properties;
+import java.util.TreeMap;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class Machine extends Observable {
     public final Map<String, Instruction> INSTRUCTION_MAP = new TreeMap<>();
     private Memory memory = new Memory();
     private Processor cpu = new Processor();
     private Code code = new Code();
+    private boolean running = false;
+    private boolean autoStepOn = false;
+    private File currentlyExecutingFile = null;
     private States state;
     
     //Part VI fields
@@ -30,6 +44,12 @@ public class Machine extends Observable {
     //Part VII fields
     private MenuBarBuilder menuBuilder;
     
+    //Part IX fields
+    private String sourceDir; 
+    private String executableDir;
+    private String eclipseDir;
+    private Properties properties = null; // this is the Properties from java.util
+
     
     /**
      * Part VI
@@ -87,19 +107,28 @@ public class Machine extends Observable {
         bar.add(menuBuilder.createFileMenu());
         bar.add(menuBuilder.createExecuteMenu());
         
-        //TODO un-comment when ExitAdapter is added.
-        //      frame.addWindowListener(new ExitAdapter());
+        frame.addWindowListener(new ExitAdapter());
         
         state = States.NOTHING_LOADED;
         state.enter();
         setChanged();
         notifyObservers();
-        //TODO start a timer here in a future step
+        javax.swing.Timer timer = new javax.swing.Timer(TICK, new TimerListener());
+        timer.start();
         frame.setVisible(true);
     }
     
     //Part VIII methods
-    public void exit() { }
+    public void exit() { // method executed when user exits the program
+        int decision = JOptionPane.showConfirmDialog(
+                frame, 
+                "Do you really wish to exit?",
+                "Confirmation",
+                JOptionPane.YES_NO_OPTION);
+        if (decision == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
+    }
     public void assembleFile() { }
     public void loadFile() { }
     public void execute() { }
@@ -370,7 +399,64 @@ public class Machine extends Observable {
             cpu.incrementCounter();
         });
         
+        //Part IX
+      //CODE TO DISCOVER THE ECLIPSE DEFAULT DIRECTORY:
+        File temp = new File("propertyfile.txt");
+        if(!temp.exists()) {
+            PrintWriter out;
+            try {
+                out = new PrintWriter(temp);
+                out.close();
+                eclipseDir = temp.getAbsolutePath();
+                temp.delete();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            eclipseDir = temp.getAbsolutePath();
+        }
+        // change to forward slashes
+        eclipseDir = eclipseDir.replace('\\','/');
+        int lastSlash = eclipseDir.lastIndexOf('/');
+        eclipseDir  = eclipseDir.substring(0, lastSlash + 1);
+        //System.out.println(eclipseDir);           
+        try { // load properties file "propertyfile.txt", if it exists
+            properties = new Properties();
+            properties.load(new FileInputStream("propertyfile.txt"));
+            sourceDir = properties.getProperty("SourceDirectory");
+            executableDir = properties.getProperty("ExecutableDirectory");
+            // CLEAN UP ANY ERRORS IN WHAT IS STORED:
+            if (sourceDir == null || sourceDir.length() == 0 
+                    || !new File(sourceDir).exists()) {
+                sourceDir = eclipseDir;
+            }
+            if (executableDir == null || executableDir.length() == 0 
+                    || !new File(executableDir).exists()) {
+                executableDir = eclipseDir;
+            }
+        } catch (Exception e) {
+            // PROPERTIES FILE DID NOT EXIST
+            sourceDir = eclipseDir;
+            executableDir = eclipseDir;
+        }
+        
         //Part VI: very last step
         createAndShowGUI();
     }
+    
+    private class ExitAdapter extends WindowAdapter {
+        @Override
+        public void windowClosing(WindowEvent arg0) {
+            exit();
+        }
+    }
+    private class TimerListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(autoStepOn) {
+                step();
+            }
+        }
+    } 
+    private static final int TICK = 500; // timer tick = 1/2 second
  }

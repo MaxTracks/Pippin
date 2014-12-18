@@ -73,7 +73,12 @@ public class MemoryViewPanel implements Observer{
 	        return returnPanel;
 		}
 		
-		public void update(Observable arg0, Object arg1) {}
+		public void update(Observable arg0, Object arg1) {
+			for(int i = lower; i < upper; i++) {
+	            dataDecimal[i].setText(""+memory.getData(i));
+	            dataHex[i].setText(Integer.toHexString(memory.getData(i)));
+	        }
+		}
 }
 
 
