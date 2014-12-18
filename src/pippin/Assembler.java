@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.swing.JOptionPane;
+
 public class Assembler {
     public static Set<String> noArgument = new TreeSet<String>();
     public static Map<String, Integer> opcode = new TreeMap<>();
@@ -62,43 +64,150 @@ public class Assembler {
             mnemonics.put(opcode.get(str), str);
         }
     }
+    
+    public static boolean allCaps(String str){
+    	boolean retVal = true;
+    	if(str != null){
+    		for(int i = 0; i < str.length(); ++i){
+    			if(!(Character.isLetter(str.charAt(i)) && Character.isUpperCase(str.charAt(i)))){
+    				retVal = false;
+    			}
+    		}
+    	}
+    	return retVal;
+    }
 
     public static boolean assemble(File input, File output) {
-        boolean goodProgram = false; // will be used at end of method
-        try {
-            goodProgram = true;
-            Scanner inp = new Scanner(input);
-            PrintWriter outp = new PrintWriter(output);
-            boolean blankLineHit = false; //keep track of when we hit a blank line
-            boolean inCode = true; //keep track that we are in the code, not in data
-            int lineCounter = 0;
-            while(inp.hasNextLine() && goodProgram) {
-                lineCounter++;
-                String line = inp.nextLine().trim();
-                if (line.equals("DATA")) {
-                    inCode = false;
-                    outp.println(-1);
-                } else {
-                    String[] parts = line.trim().split("\\s+");
-                    if(inCode) {
-                        if(parts.length == 1) {
-                            outp.println(Integer.toHexString(opcode.get(parts[0])));
-                            outp.println(0);
-                        } else {
-                            outp.println(Integer.toHexString(opcode.get(parts[0])));
-                            outp.println(parts[1]);
-                        }
-                    } else {
-                        outp.println(parts[0]);
-                        outp.println(parts[1]);                                         
-                    }
-                }
-            }
-            inp.close();
-            outp.close();
-        } catch (IOException e){
-            System.out.println("Unable to open the necessary files");
-        }
+    	boolean goodProgram = false; // will be used at end of method
+    	try {
+    		goodProgram = true;
+    		Scanner inp = new Scanner(input);
+    		PrintWriter outp = new PrintWriter(output);
+    		boolean blankLineHit = false; //keep track of when we hit a blank line
+    		boolean inCode = true; //keep track that we are in the code, not in data
+    		int lineCounter = 0;
+    		while(inp.hasNextLine() && goodProgram) {
+    			/**
+    			 * Part XIII
+    			 * @author David
+    			 */
+    			if(!blankLineHit){
+    				lineCounter++;
+    			}
+    			String line = inp.nextLine();
+    			if(line.trim().length() == 0){
+    				blankLineHit = true;
+    			}else{
+    				if (blankLineHit && line.trim().length() > 0){
+                        goodProgram = false;
+                        JOptionPane.showMessageDialog(null,
+                        		"Blank line in the source file on line " + lineCounter,
+                                "Source Error", JOptionPane.WARNING_MESSAGE);
+    				}
+    				if (goodProgram && Character.isWhitespace(line.charAt(0))){
+                        goodProgram = false;
+                        JOptionPane.showMessageDialog(null,
+                        		"Blank character at the start of line " + lineCounter,
+                                "Source Error", JOptionPane.WARNING_MESSAGE);
+    				}
+    				if(goodProgram && line.trim().equals("DATA")){
+    					inCode = false;
+    					outp.println(-1);
+    				}else if(goodProgram){
+    					String[] parts = line.trim().split("\\s+");
+    					if (parts.length > 2){
+    						goodProgram = false;
+                            JOptionPane.showMessageDialog(null,
+                                    "There are too many items on line " + lineCounter,
+                                    "Source Error", JOptionPane.WARNING_MESSAGE);
+    					}
+    					if (goodProgram && inCode){
+    						if(!allCaps(parts[0])){
+        						goodProgram = false;
+                                JOptionPane.showMessageDialog(null,
+                                        "The mnemonic is not in upper case on line " + lineCounter,
+                                        "Source Error", JOptionPane.WARNING_MESSAGE);
+    						}
+    						if (goodProgram && parts.length == 1){
+    							if(!noArgument.contains(parts[0])){
+            						goodProgram = false;
+                                    JOptionPane.showMessageDialog(null,
+                                            "Illegal mnemonic or missing argument on line " + lineCounter,
+                                            "Source Error", JOptionPane.WARNING_MESSAGE);
+    							}else{
+        							outp.println(Integer.toHexString(opcode.get(parts[0])));
+        							outp.println(0);
+    							}
+    						}else if(goodProgram){
+    							if (noArgument.contains(parts[0])){
+            						goodProgram = false;
+                                    JOptionPane.showMessageDialog(null,
+                                            "Illegal argument on line " + lineCounter,
+                                            "Source Error", JOptionPane.WARNING_MESSAGE);
+    							}
+    							if (goodProgram && !opcode.keySet().contains(parts[0])){
+            						goodProgram = false;
+                                    JOptionPane.showMessageDialog(null,
+                                            "Illegal mnemonic on line " + lineCounter,
+                                            "Source Error", JOptionPane.WARNING_MESSAGE);
+    							}
+    							if(goodProgram){
+    								try{
+    									Integer.parseInt(parts[1],16);
+    	    							outp.println(Integer.toHexString(opcode.get(parts[0])));
+    	    							outp.println(parts[1]);
+    								}catch(NumberFormatException e){
+                						goodProgram = false;
+                                        JOptionPane.showMessageDialog(null,
+                                                "The argument is not an int on line " + lineCounter,
+                                                "Source Error", JOptionPane.WARNING_MESSAGE);
+    								}
+    							}
+    						}
+    					}else if (goodProgram){	//we are in the data part
+    						if (parts.length != 2){
+        						goodProgram = false;
+                                JOptionPane.showMessageDialog(null,
+                                        "There is no address/value pair on line " + lineCounter,
+                                        "Source Error", JOptionPane.WARNING_MESSAGE);
+    						}else{
+    							try{
+    								int addr = Integer.parseInt(parts[0],16);
+    								if(addr < 0){
+                						goodProgram = false;
+                                        JOptionPane.showMessageDialog(null,
+                                                "The memory address cannot be negative on line " + lineCounter,
+                                                "Source Error", JOptionPane.WARNING_MESSAGE);
+    								}
+    							}catch(NumberFormatException e){
+            						goodProgram = false;
+                                    JOptionPane.showMessageDialog(null,
+                                            "The memory address is not an int on line " + lineCounter,
+                                            "Source Error", JOptionPane.WARNING_MESSAGE);
+    							}
+    						}
+    						if(goodProgram){
+    							try{
+    								Integer.parseInt(parts[1],16);
+    	    						outp.println(parts[0]);
+    	    						outp.println(parts[1]);  
+    							}catch(NumberFormatException e){
+            						goodProgram = false;
+                                    JOptionPane.showMessageDialog(null,
+                                            "The memory value is not an int on line " + lineCounter,
+                                            "Source Error", JOptionPane.WARNING_MESSAGE);
+    							}
+    						}
+    					}
+    				}
+    			}
+    		}//end Part XIII
+    		
+    		inp.close();
+    		outp.close();
+    	} catch (IOException e){
+    		System.out.println("Unable to open the necessary files");
+    	}
         if(!goodProgram && output != null && output.exists()) {
             output.delete();
         }

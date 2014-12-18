@@ -18,8 +18,9 @@ public class Memory {
         return data;
     }   
     public void clear(){
-    	for(int dataPoint:data){
-    		dataPoint = 0;
+    	//for(int dataPoint:data){
+    	for(int i = 0; i < data.length; ++i){
+    		data[i] = 0;
     	}
     	changedIndex= -1;
     }

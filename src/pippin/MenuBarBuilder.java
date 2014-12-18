@@ -73,15 +73,3 @@ public class MenuBarBuilder implements Observer {
         go.setEnabled(machine.getState().getStepActive());
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
