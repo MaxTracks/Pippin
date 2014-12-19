@@ -205,7 +205,7 @@ public class Machine extends Observable {
 								"Warning",
 								JOptionPane.OK_OPTION);
 			}
-		} else {// outputExe does not exist
+		} else if(openOK != JFileChooser.CANCEL_OPTION){// outputExe does not exist
 			JOptionPane.showMessageDialog(
 					frame, 
 					"The source file has problems.\n" +
@@ -295,6 +295,9 @@ public class Machine extends Observable {
 	}
 	
 	public void clearAll(){
+//		memoryViewPanel1.resetPreviousColor();
+//		memoryViewPanel2.resetPreviousColor();
+//		memoryViewPanel3.resetPreviousColor();
 		memory.clear();
 		code.clear();
 		cpu.setAccumulator(0);
@@ -318,7 +321,7 @@ public class Machine extends Observable {
 		while(running){
 			try{
 				int idx = getProgramCounter();
-				int opcode = code.getOpcode(idx);
+				String opcode = "0x" + Integer.toHexString(code.getOpcode(idx)).toUpperCase();
 				boolean imm = code.getImmediate(idx);
 				boolean ind = code.getIndirect(idx);
 				int arg = code.getArg(idx);
@@ -344,6 +347,22 @@ public class Machine extends Observable {
 								"Warning",
 								JOptionPane.OK_OPTION);
 				halt();
+			}catch(IllegalArgumentException e){
+				JOptionPane.showMessageDialog(
+						frame, 
+					    "Illegal access to code\n"
+					    	    + "Exception message: " + e.getMessage(),
+					    	    "Run time error",
+								JOptionPane.OK_OPTION);
+				halt();
+			}catch(DivideByZeroException e){
+				JOptionPane.showMessageDialog(
+						frame, 
+						"Error: DIV by zero.\n"
+								+ "Exception message: " + e.getMessage(),
+								"Run time error",
+								JOptionPane.OK_OPTION);
+				halt();
 			}
 		}
 		setChanged();
@@ -357,9 +376,7 @@ public class Machine extends Observable {
 			boolean imm = code.getImmediate(idx);
 			boolean ind = code.getIndirect(idx);
 			int arg = code.getArg(idx);
-			//System.out.println("opcode:" + opcode);
 			INSTRUCTION_MAP.get(opcode).execute(arg, imm, ind);
-			
 		}catch(ArrayIndexOutOfBoundsException e){
 			JOptionPane.showMessageDialog(
 					frame, 
@@ -380,6 +397,22 @@ public class Machine extends Observable {
 					"There was a a Null Pointer, indicating that there is an error in the simulator.",
 					"Warning",
 					JOptionPane.OK_OPTION);
+			halt();
+		}catch(IllegalArgumentException e){
+			JOptionPane.showMessageDialog(
+					frame, 
+				    "Illegal access to code\n"
+				    	    + "Exception message: " + e.getMessage(),
+				    	    "Run time error",
+							JOptionPane.OK_OPTION);
+			halt();
+		}catch(DivideByZeroException e){
+			JOptionPane.showMessageDialog(
+					frame, 
+					"Error: DIV by zero.\n"
+							+ "Exception message: " + e.getMessage(),
+							"Run time error",
+							JOptionPane.OK_OPTION);
 			halt();
 		}
 		setChanged();
@@ -543,8 +576,8 @@ public class Machine extends Observable {
 			} 
 			//Part VI calling halt()
 			halt();
-			Runtime.getRuntime().halt(0);
-			cpu.incrementCounter();
+			//Runtime.getRuntime().halt(0);
+			//cpu.incrementCounter();
 		});
 		/**
 		 * @author Alex

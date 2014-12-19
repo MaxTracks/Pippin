@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -11,13 +12,14 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
-
 public class CodeViewPanel implements Observer {
+	private int previousColor = -1;
 	private Code code = new Code();
 	private Processor cpu = new Processor(); 
 	private JScrollPane scroller;
@@ -75,13 +77,39 @@ public class CodeViewPanel implements Observer {
 	}
 	
 	public void update(Observable arg0, Object arg1) {
-		if(code != null) {
+		if(arg1 != null && arg1.equals("Load Code")) {
             for(int i = 0; i < Code.CODE_MAX; i++) {
                 codeText[i].setText(code.getCodeText(i));
                 codeHex[i].setText(code.getCodeHex(i));
-            }           
+            }     
+            previousColor = cpu.getProgramCounter();
+            codeText[previousColor].setBackground(Color.CYAN);
+            codeHex[previousColor].setBackground(Color.CYAN);
+        }
+		if(arg1 != null && arg1.equals("Clear")) {
+			for(int i = 0; i < Code.CODE_MAX; i++) {
+				codeText[i].setText("");
+				codeHex[i].setText("");
+			}
+			if(previousColor >= 0){
+				codeText[previousColor].setBackground(Color.WHITE);
+				codeHex[previousColor].setBackground(Color.WHITE);
+			}
+			previousColor = -1;
+		}
+		if(previousColor >= 0){
+			codeText[previousColor].setBackground(Color.WHITE);
+			codeHex[previousColor].setBackground(Color.WHITE);
+			previousColor = cpu.getProgramCounter();
+			codeText[previousColor].setBackground(Color.CYAN);
+			codeHex[previousColor].setBackground(Color.CYAN);
+		}
+        if(scroller != null && code != null && cpu!= null) {
+            JScrollBar bar= scroller.getVerticalScrollBar();
+            if(cpu.getProgramCounter() < Code.CODE_MAX && codeText[cpu.getProgramCounter()] != null) {
+                Rectangle bounds = codeText[cpu.getProgramCounter()].getBounds();
+                bar.setValue(Math.max(0, bounds.y - 15*bounds.height));
+            }
         }
 	}
-	
-	
 }

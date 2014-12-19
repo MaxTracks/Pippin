@@ -19,7 +19,14 @@ done:
  - CMPL
  - Parts 1-4 (Alex)
  - Parts 5-9 (Tim)
- 
-todo:
+ - Parts 10-15 (David)
 
- - Parts 10-14 (David)
+//TODO
+ctrl-a doesn't work as intended - check MenuBarBuilder
+21.pexe doesn't cause error box
+28.pexe doesn't cause error box
+FIXED 31.pexe doesn't cause error box
+FIXED 32.pexe doesn't cause error box
+FIXED hitting cancel in assemble window gives an error box
+FIXED hitting cancel in load window gives compiler errors
+DONE test files at the end of part 14

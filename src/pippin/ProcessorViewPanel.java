@@ -1,6 +1,6 @@
 package pippin;
 
-import java.awt.BorderLayout;
+//import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.Observable;
 import java.util.Observer;

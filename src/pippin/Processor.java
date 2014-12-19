@@ -12,7 +12,10 @@ public class Processor  {
 	public int getProgramCounter() {
 		return programCounter;
 	}
-	public void setProgramCounter(int programCounter) {
+	public void setProgramCounter(int programCounter) throws IllegalArgumentException{
+		if(programCounter < 0) {
+			throw (new IllegalArgumentException("Negative program counter"));
+		}
 		this.programCounter = programCounter;
 	}
 	public void incrementCounter() {

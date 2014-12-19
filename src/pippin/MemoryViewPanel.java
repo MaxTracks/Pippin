@@ -4,19 +4,19 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 
 public class MemoryViewPanel implements Observer{
+	private int previousColor = -1;
 	private Memory memory;
 	private JScrollPane scroller;
 	private JTextField[] dataDecimal = new JTextField[Memory.DATA_SIZE];
@@ -78,7 +78,42 @@ public class MemoryViewPanel implements Observer{
 	            dataDecimal[i].setText(""+memory.getData(i));
 	            dataHex[i].setText(Integer.toHexString(memory.getData(i)));
 	        }
+			if(arg1 != null && arg1.equals("Clear")){
+				for(int i = lower; i < upper; i++) {
+					dataDecimal[i].setText("");
+					dataHex[i].setText("");
+				}
+				//if(previousColor >= 0){
+				if(previousColor < upper && previousColor >= lower){
+					dataDecimal[previousColor].setBackground(Color.WHITE);
+					dataHex[previousColor].setBackground(Color.WHITE);
+					previousColor = -1;
+				}
+			}else{
+				if(previousColor < upper && previousColor >= lower){
+					dataDecimal[previousColor].setBackground(Color.WHITE);
+					dataHex[previousColor].setBackground(Color.WHITE);
+				}
+				previousColor = memory.getChangedIndex();
+				if(previousColor < upper && previousColor >= lower){
+					dataDecimal[previousColor].setBackground(Color.CYAN);
+					dataHex[previousColor].setBackground(Color.CYAN);
+				}
+			}
+			if(scroller != null && memory != null) {
+				JScrollBar bar= scroller.getVerticalScrollBar();
+				if (memory.getChangedIndex() >= lower &&
+						memory.getChangedIndex() < upper && 
+						dataDecimal[memory.getChangedIndex()] != null) {
+					Rectangle bounds = dataDecimal[memory.getChangedIndex()].getBounds();
+	                bar.setValue(Math.max(0, bounds.y - 15*bounds.height));
+	            }
+	        }
 		}
+		
+//		public void resetPreviousColor(){
+//			previousColor = -1;
+//		}
 }
 
 
